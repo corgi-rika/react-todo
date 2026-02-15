@@ -29,9 +29,39 @@ function App() {
 
   return (
     <>
-     <h1>React Todo</h1>
+      <h1>React Todo</h1>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>
+            <span>({todo.status})</span>
+            <span>{todo.title}</span>
+
+            {/* 編集ボタン（まだ機能なし） */}
+            <button>編集</button>
+          
+            {/* 削除ボタン（まだ機能なし） */}
+            <button>削除</button>
+
+
+          </li>
+        ))}
+      </ul>
     </>
   )
 }
 
 export default App
+
+
+/*
+【メモ：React開発環境の挙動】
+
+① 保存しただけでブラウザに反映される理由
+→ ViteのHot Reload（HMR）が働いているため。
+ファイル保存を検知して自動ビルドし、ブラウザに差分反映する。
+Railsのように手動リロードは不要。
+
+② buttonが最初からオシャレな理由
+→ ViteテンプレートにデフォルトCSS（App.css / index.css）が含まれているため。
+自分で書いていなくてもスタイルが適用される。
+*/

@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import type { Todo } from './types/todos.ts'
 import './App.css'
+import { TodoForm } from './components/TodoForm.tsx'
 
 function App() {
 
@@ -29,6 +30,9 @@ function App() {
 
   return (
     <>
+
+      {/* ここに書くことでTodoFormを画面に表示する */}
+      <TodoForm/>
       <h1>React Todo</h1>
       <ul>
         {todos.map((todo) => (

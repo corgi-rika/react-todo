@@ -28,11 +28,32 @@ function App() {
     }
   ])
 
+  const handleAddTodo = (title: string, status: Todo["status"]) =>{
+    // title空なら何もしない（ガード）。trimを使うことでスペースだけの入力も弾く。
+    if (title.trim() === "") return;
+
+    // idを連番で作る（最大id+1）
+    const newId = todos.length > 0 ? todos[todos.length-1].id + 1 : 1;
+
+    // 新しいTodoを作る
+    const newTodo = {
+      id: newId,
+      title,
+      status,
+      details:""
+    };
+
+    // 配列に追加
+    setTodos([...todos, newTodo]);
+  }
+
   return (
     <>
 
       {/* ここに書くことでTodoFormを画面に表示する */}
-      <TodoForm/>
+      {/* ✅ ここが重要：追加関数をフォームに渡す */}
+      <TodoForm onAddTodo={handleAddTodo} />
+
       <h1>React Todo</h1>
       <ul>
         {todos.map((todo) => (

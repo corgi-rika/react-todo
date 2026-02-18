@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import type { Todo } from './types/todos.ts'
 import './App.css'
 import { TodoForm } from './components/TodoForm.tsx'
@@ -40,12 +38,27 @@ function App() {
       id: newId,
       title,
       status,
-      details:""
+      detail:""
     };
 
     // 配列に追加
     setTodos([...todos, newTodo]);
-  }
+  };
+    // Todoを削除する関数
+    // 引数 id は「削除したいTodoの番号」
+    const handleDeleteTodo = (id: number) => {
+
+    // filterは「条件に合うものだけ残す」メソッド
+    // todo.id !== id
+    // → 押されたidと違うTodoだけ残す
+    // → 同じidのTodoは配列に入らない（＝削除される）
+    const newTodos = todos.filter((todo) => todo.id !== id);
+
+  // Reactのstateを書き換える
+  // todosが更新される → 画面が再描画される → Todoが消える
+  setTodos(newTodos);
+};
+
 
   return (
     <>
@@ -64,16 +77,21 @@ function App() {
             {/* 編集ボタン（まだ機能なし） */}
             <button>編集</button>
           
-            {/* 削除ボタン（まだ機能なし） */}
-            <button>削除</button>
+            
+            <button onClick={() => handleDeleteTodo(todo.id)}
+            >削除</button>
 
+            {/* ↑reactは上でこうしている　button.onclick = function () {
+            handleDeleteTodo(todo.id);
+            }; */}
 
           </li>
         ))}
       </ul>
     </>
-  )
+  );
 }
+
 
 export default App
 

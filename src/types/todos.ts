@@ -21,4 +21,5 @@ export type Todo = {
   // 詳細説明
   // メモや補足を書く欄
   detail: string;
+  isEditing: boolean; // 編集モードかどうかを表すフラグ
 };

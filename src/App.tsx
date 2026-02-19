@@ -1,30 +1,33 @@
 import { useState } from 'react'
-import type { Todo } from './types/todos.ts'
+import type { Todo } from './types/todos.ts' // Todo型だけを読み込む（typeなので実行時には消える）
 import './App.css'
-import { TodoForm } from './components/TodoForm.tsx'
+import { TodoForm } from './components/TodoForm.tsx' // 追加フォームのコンポーネント
 
 function App() {
 
   // Todoの配列をstateで持つ
   // 型は Todo[]（Todoの配列）
-  const [todos, setTodos] = useState<Todo[]>// ← TypeScriptの説明。このstateにはTodoの配列が入る
-  ([
+  const [todos, setTodos] = useState<Todo[]>([    // ← TypeScriptの説明。このstateにはTodoの配列が入る
+
     {id:1,
       title:"React Todoを作る",
       status: "notStarted",
-      detail: "まず土台"
+      detail: "まず土台",
+      isEditing: false
     },
     {id:2,
       title:"一覧UIを作る",
       status: "inProgress",
       detail: "mapで表示",
+      isEditing: false
     },
     {id:3,
       title:"Issueで管理する",
       status: "done",
-      detail: "進捗を見える化"
+      detail: "進捗を見える化",
+      isEditing: false
     }
-  ])
+  ]);
 
   const handleAddTodo = (title: string, status: Todo["status"]) =>{
     // title空なら何もしない（ガード）。trimを使うことでスペースだけの入力も弾く。
@@ -38,7 +41,8 @@ function App() {
       id: newId,
       title,
       status,
-      detail:""
+      detail:"", // 詳細は空で作る
+      isEditing: false // 編集モードは最初はfalse
     };
 
     // 配列に追加
@@ -58,6 +62,23 @@ function App() {
   // todosが更新される → 画面が再描画される → Todoが消える
   setTodos(newTodos);
 };
+    // 編集を開始（isEditing を true にする）
+    const handleStartEdit = (id: number) => {
+      const updated = todos.map((todo) =>
+      todo.id === id ? {...todo, isEditing: true} : todo);
+      setTodos(updated);
+    };
+
+    // 編集をキャンセル（isEditing を false に戻す）
+    const handleCancelEdit = (id: number) => {
+    const updated = todos.map((todo) =>
+    todo.id === id ? { ...todo, isEditing: false } : todo
+    );
+    setTodos(updated);
+};
+
+const [editingTitle, setEditingTitle] = useState("");
+
 
 
   return (
@@ -71,20 +92,32 @@ function App() {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            <span>({todo.status})</span>
-            <span>{todo.title}</span>
+            {/* 編集中の表示 */}
+            {todo.isEditing ? (
+              <>
+                <input
+                  value={editingTitle}
+                  onChange={(e) =>setEditingTitle(e.target.value)}
+                />
 
-            {/* 編集ボタン（まだ機能なし） */}
-            <button>編集</button>
+                <button onClick={() =>handleCancelEdit(todo.id)}>キャンセル</button>
+              </>
+            ):(
+              <>
+                {/* 通常表示 */}
+                <span>({todo.status})</span>
+                <span>{todo.title}</span>
+
+                <button onClick={() => handleStartEdit(todo.id)}>編集</button>
           
             
-            <button onClick={() => handleDeleteTodo(todo.id)}
-            >削除</button>
-
+                <button onClick={() => handleDeleteTodo(todo.id)}
+                >削除</button>
             {/* ↑reactは上でこうしている　button.onclick = function () {
             handleDeleteTodo(todo.id);
             }; */}
-
+              </>
+            )}
           </li>
         ))}
       </ul>

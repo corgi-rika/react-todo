@@ -65,8 +65,14 @@ function App() {
     // 編集を開始（isEditing を true にする）
     const handleStartEdit = (id: number) => {
       const updated = todos.map((todo) =>
-      todo.id === id ? {...todo, isEditing: true} : todo);
+      todo.id === id ? 
+      {...todo, isEditing: true} 
+      :{...todo, isEditing: false} // 他は編集モードじゃないようにする（任意）;
+    );
       setTodos(updated);
+
+      const target = todos.find((todo) => todo.id === id);
+      if (target) setEditingTitle(target.title); // 編集用の入力に現在のタイトルをセット
     };
 
     // 編集をキャンセル（isEditing を false に戻す）
@@ -77,6 +83,18 @@ function App() {
     setTodos(updated);
 };
 
+const handleSaveEdit = (id: number) => {
+  if (editingTitle.trim() === "") return;
+
+  const updated = todos.map((todo) =>
+    todo.id === id 
+      ? { ...todo, title: editingTitle.trim(), isEditing: false } 
+      : todo
+  );
+  setTodos(updated);
+
+  setEditingTitle(""); // 編集用の入力をリセット
+}
 const [editingTitle, setEditingTitle] = useState("");
 
 
@@ -99,7 +117,7 @@ const [editingTitle, setEditingTitle] = useState("");
                   value={editingTitle}
                   onChange={(e) =>setEditingTitle(e.target.value)}
                 />
-
+                <button onClick={() =>handleSaveEdit(todo.id)}>保存</button>
                 <button onClick={() =>handleCancelEdit(todo.id)}>キャンセル</button>
               </>
             ):(
@@ -109,11 +127,8 @@ const [editingTitle, setEditingTitle] = useState("");
                 <span>{todo.title}</span>
 
                 <button onClick={() => handleStartEdit(todo.id)}>編集</button>
-          
-            
-                <button onClick={() => handleDeleteTodo(todo.id)}
-                >削除</button>
-            {/* ↑reactは上でこうしている　button.onclick = function () {
+                <button onClick={() => handleDeleteTodo(todo.id)}>削除</button>
+            {/* ↑reactは上でこうしている  button.onclick = function () {
             handleDeleteTodo(todo.id);
             }; */}
               </>

@@ -29,6 +29,12 @@ function App() {
     }
   ]);
 
+  // 絞り込み用の入力値を保存するstate
+  const [filterId, setFilterId] = useState<string>("");
+
+  // 絞り込み用のステータスを保存するstate
+  const [filterStatus, setFilterStatus] = useState<Todo["status"] | "all">("all");
+
   const handleAddTodo = (title: string, status: Todo["status"]) =>{
     // title空なら何もしない（ガード）。trimを使うことでスペースだけの入力も弾く。
     if (title.trim() === "") return;
@@ -97,18 +103,76 @@ const handleSaveEdit = (id: number) => {
 }
 const [editingTitle, setEditingTitle] = useState("");
 
+// 表示用のTodo配列（ここで絞り込みを行う）
+const filteredTodos = todos.filter((todo) => {
+  const matchId =
+    filterId.trim() === "" ? true : todo.id === Number(filterId);
 
+  const matchStatus =
+    filterStatus === "all" ? true : todo.status === filterStatus;
+
+  return matchId && matchStatus;
+});
 
   return (
     <>
 
+    
+
       {/* ここに書くことでTodoFormを画面に表示する */}
-      {/* ✅ ここが重要：追加関数をフォームに渡す */}
+      {/*  ここが重要：追加関数をフォームに渡す */}
       <TodoForm onAddTodo={handleAddTodo} />
+
+{/*  絞り込みUIのかたまり（見た目をまとめる箱） */}
+<div style={{ marginBottom: 12 }}>
+  {/* ID絞り込み用の入力欄 */}
+  <input
+    placeholder="IDで絞り込み"
+    /*  inputに表示する値。filterId(state)と同期させる */
+    value={filterId}
+    /*  入力が変わったらfilterIdを更新する → 再描画 → 絞り込みが効く */
+    onChange={(e) => setFilterId(e.target.value)}
+  />
+
+  {/*  ステータス絞り込み用のセレクト */}
+  <select
+    /*  selectに表示する値。filterStatus(state)と同期させる */
+    value={filterStatus}
+    /*  選択が変わったらfilterStatusを更新する → 再描画 → 絞り込みが効く */
+    onChange={(e) =>
+      /* selectは文字列で返るので、型を合わせるためasで変換する */
+      setFilterStatus(e.target.value as Todo["status"] | "all")
+    }
+  >
+    {/* all = 絞り込みなし（全部表示） */}
+    <option value="all">すべて</option>
+
+    {/* Todo.status が notStarted のものだけ表示 */}
+    <option value="notStarted">未着手</option>
+
+    {/*  Todo.status が inProgress のものだけ表示 */}
+    <option value="inProgress">進行中</option>
+
+    {/*  Todo.status が done のものだけ表示 */}
+    <option value="done">完了</option>
+  </select>
+
+  {/*  絞り込み条件を初期値に戻すボタン */}
+  <button
+    onClick={() => {
+      /*  ID条件を空に戻す（=ID絞り込みなし） */
+      setFilterId("");
+      /*  ステータス条件をallに戻す（=ステータス絞り込みなし） */
+      setFilterStatus("all");
+    }}
+  >
+    リセット
+  </button>
+</div>
 
       <h1>React Todo</h1>
       <ul>
-        {todos.map((todo) => (
+        {filteredTodos.map((todo) => (
           <li key={todo.id}>
             {/* 編集中の表示 */}
             {todo.isEditing ? (
